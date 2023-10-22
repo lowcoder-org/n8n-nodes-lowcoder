@@ -1,71 +1,12 @@
 import type { INodeProperties } from 'n8n-workflow';
 
-export const appOperations: INodeProperties[] = [
-	// ----------------------------------
-	//         app
-	// ----------------------------------
-	{
-		displayName: 'Operation',
-		name: 'operation',
-		type: 'options',
-		noDataExpression: true,
-		displayOptions: {
-			show: {
-				resource: ['app'],
-			},
-		},
-		options: [
-			{
-				name: 'Create',
-				value: 'create',
-				description: 'Create a new app',
-				action: 'Create a app',
-			},
-			{
-				name: 'Delete',
-				value: 'delete',
-				description: 'Delete a app',
-				action: 'Delete a app',
-			},
-			{
-				name: 'Get',
-				value: 'get',
-				description: 'Get the data of a app',
-				action: 'Get a app',
-			},
-			{
-				name: 'Update',
-				value: 'update',
-				description: 'Update a app',
-				action: 'Update a app',
-			},
-		],
-		default: 'create',
-	},
-];
-
 export const appFields: INodeProperties[] = [
 	// ----------------------------------
 	//         app:create
 	// ----------------------------------
 	{
-		displayName: 'Name',
-		name: 'name',
-		type: 'string',
-		default: '',
-		placeholder: 'My app',
-		required: true,
-		displayOptions: {
-			show: {
-				operation: ['create'],
-				resource: ['app'],
-			},
-		},
-		description: 'The name of the app',
-	},
-	{
 		displayName: 'App',
-		name: 'id',
+		name: 'appId',
 		type: 'resourceLocator',
 		default: { mode: 'list', value: '' },
 		required: true,
@@ -78,12 +19,6 @@ export const appFields: INodeProperties[] = [
 				typeOptions: {
 					searchListMethod: 'searchApps',
 				},
-			},
-			{
-				displayName: 'By Name',
-				name: 'name',
-				type: 'string',
-				placeholder: 'name@example.tld\'s new app'
 			},
 			{
 				displayName: 'ID',
@@ -101,12 +36,57 @@ export const appFields: INodeProperties[] = [
 				placeholder: '65129e728953c27f7d15b64d',
 			},
 		],
-		displayOptions: {
-			show: {
-				operation: ['get', 'delete', 'update'],
-				resource: ['app'],
-			},
-		},
 		description: 'The ID of the app',
 	}
 ];
+
+export const httpMethodsProperty: INodeProperties = {
+	displayName: 'HTTP Method',
+	name: 'httpMethod',
+	type: 'options',
+	options: [
+		{
+			name: 'DELETE',
+			value: 'DELETE',
+		},
+		{
+			name: 'GET',
+			value: 'GET',
+		},
+		{
+			name: 'HEAD',
+			value: 'HEAD',
+		},
+		{
+			name: 'PATCH',
+			value: 'PATCH',
+		},
+		{
+			name: 'POST',
+			value: 'POST',
+		},
+		{
+			name: 'PUT',
+			value: 'PUT',
+		},
+	],
+	default: 'GET',
+	description: 'The HTTP method to listen to',
+};
+
+export const optionsProperty: INodeProperties = {
+	displayName: 'Options',
+	name: 'options',
+	type: 'collection',
+	placeholder: 'Add Option',
+	default: {},
+	options: [
+		{
+			displayName: 'Ignore Bots',
+			name: 'ignoreBots',
+			type: 'boolean',
+			default: false,
+			description: 'Whether to ignore requests from bots like link previewers and web crawlers',
+		}
+	],
+};

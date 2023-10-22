@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Vadavision/n8n-nodes-lowcoder.git"
+    "url": "https://github.com/lowcoder-org/n8n-nodes-lowcoder.git"
   },
   "main": "index.js",
   "scripts": {
@@ -49,6 +49,7 @@
   },
   "dependencies": {
     "@types/set-cookie-parser": "^2.4.4",
+    "isbot": "^3.7.0",
     "set-cookie-parser": "^2.6.0"
   }
 }
