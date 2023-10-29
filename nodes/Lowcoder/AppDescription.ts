@@ -5,7 +5,7 @@ export const appFields: INodeProperties[] = [
 	//         app:create
 	// ----------------------------------
 	{
-		displayName: 'App',
+		displayName: 'Select App or Module',
 		name: 'appId',
 		type: 'resourceLocator',
 		default: { mode: 'list', value: '' },
@@ -41,7 +41,7 @@ export const appFields: INodeProperties[] = [
 ];
 
 export const httpMethodsProperty: INodeProperties = {
-	displayName: 'HTTP Method',
+	displayName: 'Webhook HTTP Method',
 	name: 'httpMethod',
 	type: 'options',
 	options: [

@@ -30,12 +30,6 @@ export class LowcoderApi implements ICredentialType {
 			type: 'string',
 			default: '',
 		},
-        {
-			displayName: 'API Token',
-			name: 'apiToken',
-			type: 'string',
-			default: '',
-		},
 		{
 			displayName: 'Username',
 			name: 'username',
@@ -67,9 +61,6 @@ export class LowcoderApi implements ICredentialType {
 				register: "false",
 				source: "EMAIL",
 				authId: "EMAIL"
-			},
-			headers: {
-				LOWCODER_CE_SELFHOST_TOKEN: credentials.apiToken
 			},
 			returnFullResponse: true
 		} as IHttpRequestOptions;

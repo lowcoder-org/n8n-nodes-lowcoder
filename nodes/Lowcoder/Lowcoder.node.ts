@@ -32,7 +32,7 @@ export class Lowcoder implements INodeType {
         icon: 'file:lowcoder.png',
         group: ['transform'],
         version: 1,
-		subtitle: '={{$parameter["resource"] }}:{{ $parameter["appId"]',
+		subtitle: '=app:{{ $parameter["appId"]',
         description: 'Consume Lowcoder API',
         defaults: {
             name: 'Lowcoder',
@@ -61,23 +61,15 @@ export class Lowcoder implements INodeType {
             },
 		],
         properties: [
-            {
-				displayName: 'Resource',
-				name: 'resource',
-				type: 'options',
-				noDataExpression: true,
-				options: [
-					{
-						name: 'App',
-						value: 'app',
-					}
-				],
-				default: 'app',
-			},
             ...appFields,
             {
-				displayName:
-					'The webhook URL will be generated at run time. It can be referenced with the <strong>$execution.resumeUrl</strong> variable. Send it somewhere before getting to this node. <a href="https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.wait/?utm_source=n8n_app&utm_medium=node_settings_modal-credential_link&utm_campaign=n8n-nodes-base.wait" target="_blank">More info</a>',
+				displayName: 'Resume the workflow by calling this Webhook: http(s)://{n8n-url}/webhook-waiting/{Workflow-Execution-ID}/{Lowcoder-App-ID}',
+				name: 'webhookNotice',
+				type: 'notice',
+				default: '',
+			},
+			{
+				displayName: 'The Workflow-Execution-ID is available via the n8n Rest API',
 				name: 'webhookNotice',
 				type: 'notice',
 				default: '',
@@ -104,7 +96,7 @@ export class Lowcoder implements INodeType {
                         withContainerSize: false
 					},
 				);
-
+					console.log(searchResults);
 				return {
 					results: searchResults.data.map((b: LowcoderAppType) => ({
 						name: `${b.name} (${b.applicationType == 2 ? "Module" : "App"})`,
@@ -134,15 +126,14 @@ export class Lowcoder implements INodeType {
             resp.end(error.message);
             return { noWebhookResponse: true };
 		}
-        // const { data } = req.body;
-
+		const body = typeof req.body != 'undefined' ? req.body : {};
         const returnItem: INodeExecutionData = {
             binary: {},
             json: {
                 headers: req.headers,
                 params: req.params,
                 query: req.query,
-                // body: data,
+                body: body,
             },
         };
         return { workflowData: [[returnItem]] };
