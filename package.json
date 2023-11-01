@@ -1,15 +1,15 @@
 {
   "name": "n8n-nodes-lowcoder",
   "version": "0.1.0",
-  "description": "",
+  "description": "This n8n node package allows Lowcoder users to interact different lowcoder apps",
   "keywords": [
     "n8n-community-node-package"
   ],
   "license": "MIT",
-  "homepage": "",
+  "homepage": "https://github.com/lowcoder-org/n8n-nodes-lowcoder",
   "author": {
-    "name": "",
-    "email": ""
+    "name": "Pankil Joshi",
+    "email": "pankil@zeroek.in"
   },
   "repository": {
     "type": "git",
