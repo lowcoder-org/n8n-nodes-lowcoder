@@ -1,5 +1,3 @@
-
-
 import {
 	INodeType,
 	INodeTypeDescription,
@@ -50,10 +48,9 @@ export class Lowcoder implements INodeType {
                 name: 'default',
                 httpMethod: '={{$parameter["httpMethod"]}}',
                 isFullPath: true,
-                responseCode: '200',
                 responseMode: 'onReceived',
-                responseData: 'allEntries',
-                responseContentType: '={{$parameter["options"]["responseContentType"]}}',
+                responseData: '={{$parameter["options"]["responseData"] || "Workflow Resumed!"}}',
+                responseContentType: '={{$parameter["options"]["responseContentType"] || "application/json"}}',
                 responsePropertyName: '={{$parameter["options"]["responsePropertyName"]}}',
                 responseHeaders: '={{$parameter["options"]["responseHeaders"]}}',
                 path: '={{$parameter["appId"] || ""}}',
@@ -75,7 +72,14 @@ export class Lowcoder implements INodeType {
 				default: '',
 			},
             httpMethodsProperty,
-            optionsProperty
+            optionsProperty,
+            {
+                displayName: 'Response Code',
+                name: 'responseCode',
+                type: 'number',
+                default: 200,
+                description: 'The HTTP response code to return',
+            },
         ],
 	};
 
@@ -113,6 +117,7 @@ export class Lowcoder implements INodeType {
 			ignoreBots: boolean;
 			rawBody: Buffer;
 			responseData?: string;
+            responseCode?: number;
 		};
 		const req = this.getRequestObject();
 		const resp = this.getResponseObject();
@@ -122,27 +127,43 @@ export class Lowcoder implements INodeType {
 				throw new NodeApiError(this.getNode(), {}, { message: 'Authorization data is wrong!' });
             }
 		} catch (error) {
-            resp.writeHead(error.responseCode, { 'WWW-Authenticate': 'Basic realm="Webhook"' });
+            resp.writeHead(error.responseCode || 401, { 'WWW-Authenticate': 'Basic realm="Webhook"' });
             resp.end(error.message);
             return { noWebhookResponse: true };
 		}
-		const body = typeof req.body != 'undefined' ? req.body : {};
-        const returnItem: INodeExecutionData = {
-            binary: {},
-            json: {
-                headers: req.headers,
-                params: req.params,
-                query: req.query,
-                body: body,
-            },
-        };
-        return { workflowData: [[returnItem]] };
+
+        const type = req.query.type;
+        if (type === 'resume') {
+            // Resume workflow as before
+            const body = typeof req.body != 'undefined' ? req.body : {};
+            const returnItem: INodeExecutionData = {
+                binary: {},
+                json: {
+                    headers: req.headers,
+                    params: req.params,
+                    query: req.query,
+                    body: body,
+                },
+            };
+            const responseCode = options.responseCode || 200;
+            resp.statusCode = responseCode;
+            return { workflowData: [[returnItem]] };
+        } else {
+            // Return input data, and don't resume
+            const staticData = this.getWorkflowStaticData('node');
+            const previousData = staticData.previousNodeData || [];
+            resp.statusCode = 200;
+            resp.setHeader('Content-Type', 'application/json');
+            resp.end(JSON.stringify({ message: 'Static response: workflow not resumed', type, previousData }));
+            return { noWebhookResponse: true };
+		}
 	}
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 
         let waitTill = new Date(WAIT_TIME_UNLIMITED);
-
+        const staticData = this.getWorkflowStaticData('node');
+        staticData.previousNodeData = this.getInputData().map(item => item.json);
         await this.putExecutionToWait(waitTill);
 		return [this.getInputData()];
 	}
